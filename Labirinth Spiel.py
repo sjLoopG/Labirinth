@@ -32,8 +32,11 @@ labyrinth = [
     [1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1],
 ]
 
+# Position der Figur
+figur_x = 0
+figur_y = 0
 
-# Funktion zum Zeichnen des Spielfelds mit Labyrinth
+# Funktion zum Zeichnen des Spielfelds mit Labyrinth und Figur
 def zeichne_spielfeld():
     zellen_breite = 400 / Feld_Breite
     zellen_höhe = 400 / Feld_Höhe
@@ -50,8 +53,55 @@ def zeichne_spielfeld():
             else:
                 canvas.create_rectangle(x1, y1, x2, y2, fill="white", outline="white", width=1)
 
-# Aufruf der Funktion zum Zeichnen des Spielfelds mit Labyrinth
+    # Zeichne die Figur
+    figur_x1 = figur_x * zellen_breite
+    figur_y1 = figur_y * zellen_höhe
+    figur_x2 = figur_x1 + zellen_breite
+    figur_y2 = figur_y1 + zellen_höhe
+    canvas.create_oval(figur_x1, figur_y1, figur_x2, figur_y2, fill="red")
+
+# Funktion zur Überprüfung der Kollision mit Wänden
+def prüfe_kollision(neue_x, neue_y):
+    if neue_x < 0 or neue_x >= Feld_Breite:
+        return False
+    if neue_y < 0 or neue_y >= Feld_Höhe:
+        return False
+    if labyrinth[neue_y][neue_x] == 1:
+        return False
+    return True
+
+# Funktion zum Bewegen der Figur
+def bewege_figur(event):
+    global figur_x, figur_y
+
+    if event.keysym == "Up":
+        neue_x = figur_x
+        neue_y = figur_y - 1
+    elif event.keysym == "Down":
+        neue_x = figur_x
+        neue_y = figur_y + 1
+    elif event.keysym == "Left":
+        neue_x = figur_x - 1
+        neue_y = figur_y
+    elif event.keysym == "Right":
+        neue_x = figur_x + 1
+        neue_y = figur_y
+    else:
+        return
+
+    if prüfe_kollision(neue_x, neue_y):
+        figur_x = neue_x
+        figur_y = neue_y
+
+    # Aktualisiere das Spielfeld
+    zeichne_spielfeld()
+
+# Aufruf der Funktion zum Zeichnen des Spielfelds mit Labyrinth und Figur
 zeichne_spielfeld()
+
+# Verknüpfen der Tastaturereignisse mit der Funktion zum Bewegen der Figur
+fenster.bind("<Key>", bewege_figur)
+fenster.focus_set()
 
 # Starten der Hauptschleife des Fensters
 fenster.mainloop()
