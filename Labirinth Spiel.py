@@ -13,9 +13,9 @@ fenster.configure(bg="white")
 canvas = tk.Canvas(fenster, width=400, height=400, bg="white")
 canvas.pack()
 
-# Labyrinth-Konfiguration (0 = Freie Zelle, 1 = Hindernis)
+# Labyrinth-Konfiguration (0 = Freie Zelle, 1 = Hindernis, 2 = Ziel/Passierbares Feld)
 labyrinth = [
-    [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1],
+    [3, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1],
     [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1],
     [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1],
     [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1],
@@ -29,7 +29,7 @@ labyrinth = [
     [1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1],
     [1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1],
     [1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1],
-    [1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1],
+    [1, 1, 1, 0, 0, 1, 0, 1, 2, 1, 1, 0, 1, 1, 1],
 ]
 
 # Position der Figur
@@ -50,6 +50,8 @@ def zeichne_spielfeld():
 
             if labyrinth[j][i] == 1:
                 canvas.create_rectangle(x1, y1, x2, y2, fill="black", outline="white", width=1)
+            elif labyrinth[j][i] == 2:
+                canvas.create_rectangle(x1, y1, x2, y2, fill="green", outline="white", width=1)
             else:
                 canvas.create_rectangle(x1, y1, x2, y2, fill="white", outline="white", width=1)
 
@@ -60,7 +62,7 @@ def zeichne_spielfeld():
     figur_y2 = figur_y1 + zellen_höhe
     canvas.create_oval(figur_x1, figur_y1, figur_x2, figur_y2, fill="red")
 
-# Funktion zur Überprüfung der Kollision mit Wänden
+# Funktion zur Überprüfung der Kollision mit Wänden oder dem Ziel
 def prüfe_kollision(neue_x, neue_y):
     if neue_x < 0 or neue_x >= Feld_Breite:
         return False
@@ -92,6 +94,16 @@ def bewege_figur(event):
     if prüfe_kollision(neue_x, neue_y):
         figur_x = neue_x
         figur_y = neue_y
+
+    # Überprüfe, ob das Ziel erreicht wurde
+    if labyrinth[figur_y][figur_x] == 2:
+        # Erstelle ein neues Fenster für das nächste Level
+        neues_fenster = tk.Toplevel(fenster)
+        neues_fenster.title("Next Level")
+        neues_fenster.geometry("400x400")
+        neues_fenster.configure(bg="white")
+        label = tk.Label(neues_fenster, text="Next Level", font=("Arial", 20), fg="black", bg="white")
+        label.pack(expand=True)
 
     # Aktualisiere das Spielfeld
     zeichne_spielfeld()
