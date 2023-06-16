@@ -97,12 +97,8 @@ def bewege_figur(event):
 
     # Überprüfe, ob das Ziel erreicht wurde
     if labyrinth[figur_y][figur_x] == 2:
-        # Erstelle ein neues Fenster für das nächste Level
-        neues_fenster = tk.Toplevel(fenster)
-        neues_fenster.title("Next Level")
-        neues_fenster.geometry("400x400")
-        neues_fenster.configure(bg="white")
-        label = tk.Label(neues_fenster, text="Next Level", font=("Arial", 20), fg="black", bg="white")
+        
+        label = tk.Label(canvas, text="Next Level", font=("Arial", 20), fg="black", bg="white")
         label.pack(expand=True)
 
     # Aktualisiere das Spielfeld
