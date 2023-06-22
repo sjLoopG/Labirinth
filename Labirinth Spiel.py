@@ -12,6 +12,9 @@ Feld_Höhe = 15
 figur_x = 0
 figur_y = 0
 
+highscores = ["5", "23"]
+names = ["Loop", "Nadia"]
+
 start_time = time.time()
 end_time = start_time
 
@@ -38,13 +41,25 @@ class App:
         self.empty_label = tk.Label(self.main_frame, text="")
         self.start_button = tk.Button(self.main_frame, text="Start Game", command=self.set_level_1_frame)
         total_time = round((end_time - start_time), 2)
+        self.highscore_titel = tk.Label(self.main_frame, text="Highscore")
+        
+        
+        
         self.last_time_label = tk.Label(self.main_frame, text="Last Time: " + str(total_time))
         self.quit_button = tk.Button(self.main_frame, text="Quit", command=self.quit_app)
         # Widgets positionieren
         self.hallo_label.grid(row=0, column=0)
         self.empty_label.grid(row=1, column=0)
         self.start_button.grid(row=2, column=0)
-        self.last_time_label.grid(row=4, column=0)
+        self.highscore_titel.grid(row=4, column=0)
+        
+        counter = 0;
+        for x in names:
+             tk.Label(self.main_frame, text=str(counter+1) +". " +
+                      str(names[counter]) + " " + str(highscores[counter])+ "''").grid(row=counter+5, column=0) 
+             counter += 1
+        
+        
         self.quit_button.grid(row=8, column=0)
 
         # Bestätigung in der Konsole
@@ -52,7 +67,19 @@ class App:
         # Fenster neustarten
         self.master.mainloop()
 
-
+    def set_name_frame(self):
+        self.set_name_frame = tk.Frame(self.master)
+        self.set_name_frame.pack()
+        self.hallo_label = tk.Label(self.set_name_frame , text="Enter your Name")
+        inputName = tk.Entry(self.set_name_frame)
+        self.ok_button = tk.Button(self.set_name_frame , text="OK", command=self.exit_name_frame)
+        self.hallo_label.grid(row=0, column=0)
+        inputName.grid(row=0, column=1)
+        self.ok_button.grid(row=1, column=0)
+        
+    def exit_name_frame(self):
+        self.set_name_frame.destroy()
+        self.set_main_frame()
 
     # Einsellungsfenster starten
     def set_level_1_frame(self):
@@ -133,7 +160,7 @@ class App:
             end_time = time.time()
             self.level_1_frame.destroy()
             # Hauptframe starten
-            self.set_main_frame()
+            self.set_name_frame()
 
         def bewege_figur(event):
             global figur_x, figur_y
