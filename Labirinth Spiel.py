@@ -1,19 +1,19 @@
-
-
 # Module importieren
 import tkinter as tk
 import time
 
 # Größe des Spielfelds
 Feld_Breite = 15
-Feld_Höhe = 15
+Feld_Hoehe = 15
 
 # Position der Figur
 figur_x = 0
 figur_y = 0
 
-highscores = ["5", "23"]
-names = ["Loop", "Nadia"]
+highscore = [
+    {"name": "Loop", "zeit": 30.0},
+    {"name": "Nadia", "zeit": 25.0}
+]
 
 start_time = time.time()
 end_time = start_time
@@ -26,9 +26,7 @@ class App:
         something = self
         self.master = tk.Tk()
         self.master.geometry("400x400")
-        self.master.protocol("WM_DELETE_WINDOW", self.quit_app)
         self.master.title("Maze Runner")
-
         self.set_main_frame()
 
     # Hauptfenster starten
@@ -37,48 +35,71 @@ class App:
         self.main_frame = tk.Frame(self.master)
         self.main_frame.pack()
         # Widgets initialisieren
-        self.hallo_label = tk.Label(self.main_frame, text="Welcome to the amazing Maze Game!")
+        self.name_label = tk.Label(self.main_frame, text="Welcome to the amazing Maze Game!", font="bold")
         self.empty_label = tk.Label(self.main_frame, text="")
         self.start_button = tk.Button(self.main_frame, text="Start Game", command=self.set_level_1_frame)
-        total_time = round((end_time - start_time), 2)
-        self.highscore_titel = tk.Label(self.main_frame, text="Highscore")
-        
-        
-        
-        self.last_time_label = tk.Label(self.main_frame, text="Last Time: " + str(total_time))
-        self.quit_button = tk.Button(self.main_frame, text="Quit", command=self.quit_app)
+        self.empty_label_2 = tk.Label(self.main_frame, text="")
+        self.empty_label_3 = tk.Label(self.main_frame, text="")
+        self.highscore_titel = tk.Label(self.main_frame, text="Highscore", font="bold")
+
         # Widgets positionieren
-        self.hallo_label.grid(row=0, column=0)
+        self.name_label.grid(row=0, column=0)
         self.empty_label.grid(row=1, column=0)
         self.start_button.grid(row=2, column=0)
+        self.empty_label_2.grid(row=3, column=0)
         self.highscore_titel.grid(row=4, column=0)
-        
-        counter = 0;
-        for x in names:
-             tk.Label(self.main_frame, text=str(counter+1) +". " +
-                      str(names[counter]) + " " + str(highscores[counter])+ "''").grid(row=counter+5, column=0) 
-             counter += 1
-        
-        
-        self.quit_button.grid(row=8, column=0)
+        self.empty_label_3.grid(row=5, column=0)
 
-        # Bestätigung in der Konsole
-        print("Hauptfenster geöffnet")
-        # Fenster neustarten
+        # Highscore sortieren
+        sortedHighScoreList = sorted(highscore, key=lambda x: x["zeit"])
+
+        # Highscore anzeigen
+        counter = 0
+        for score in sortedHighScoreList:
+            tk.Label(self.main_frame, text=str(counter+1) +". " +
+                                           str(score["name"]) + " " + str(score["zeit"])+ "''").grid(row=counter+6, column=0)
+            counter += 1
+
         self.master.mainloop()
 
     def set_name_frame(self):
-        self.set_name_frame = tk.Frame(self.master)
-        self.set_name_frame.pack()
-        self.hallo_label = tk.Label(self.set_name_frame , text="Enter your Name")
-        inputName = tk.Entry(self.set_name_frame)
-        self.ok_button = tk.Button(self.set_name_frame , text="OK", command=self.exit_name_frame)
-        self.hallo_label.grid(row=0, column=0)
-        inputName.grid(row=0, column=1)
-        self.ok_button.grid(row=1, column=0)
-        
+
+        global start_time, end_time, highscore
+
+        self.name_frame = tk.Frame(self.master)
+        self.name_frame.pack()
+        self.total_time = round((end_time - start_time), 2)
+
+        sortedHighScoreList = sorted(highscore, key=lambda x: x["zeit"])
+        bestScore = sortedHighScoreList[0]
+        bestTime = bestScore["zeit"]
+
+        if (self.total_time < bestTime):
+            print(bestScore)
+            print(bestScore["zeit"])
+            print(self.total_time)
+            tk.Label(self.name_frame , text="NEW RECORD !!!").grid(row=0, column=0)
+            tk.Label(self.name_frame , text="You have beaten the time of " + bestScore["name"]).grid(row=1, column=0)
+
+
+        time_label = tk.Label(self.name_frame , text="Your time was: " + str(self.total_time))
+        self.name_label = tk.Label(self.name_frame, text="Please enter your Name:")
+        self.inputName = tk.Entry(self.name_frame)
+        self.ok_button = tk.Button(self.name_frame , text="OK", command=self.exit_name_frame)
+
+        self.name_label.grid(row=2, column=0)
+        self.inputName.grid(row=3, column=0)
+        time_label.grid(row=4, column=0)
+        self.ok_button.grid(row=5, column=0)
+
+
+
     def exit_name_frame(self):
-        self.set_name_frame.destroy()
+        print(self.inputName.get())
+        print(self.total_time)
+
+        highscore.append({"name": "" + self.inputName.get() + "", "zeit": + self.total_time })
+        self.name_frame.destroy()
         self.set_main_frame()
 
     # Einsellungsfenster starten
@@ -102,7 +123,7 @@ class App:
         labyrinth = [
             [3, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1],
             [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1],
-            [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1],
+            [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1],
             [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1],
             [0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1],
             [0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1],
@@ -119,10 +140,10 @@ class App:
 
         def zeichne_spielfeld():
             zellen_breite = 400 / Feld_Breite
-            zellen_höhe = 400 / Feld_Höhe
+            zellen_höhe = 400 / Feld_Hoehe
 
             for i in range(Feld_Breite):
-                for j in range(Feld_Höhe):
+                for j in range(Feld_Hoehe):
                     x1 = i * zellen_breite
                     y1 = j * zellen_höhe
                     x2 = x1 + zellen_breite
@@ -145,7 +166,7 @@ class App:
         def prüfe_kollision(neue_x, neue_y):
             if neue_x < 0 or neue_x >= Feld_Breite:
                 return False
-            if neue_y < 0 or neue_y >= Feld_Höhe:
+            if neue_y < 0 or neue_y >= Feld_Hoehe:
                 return False
             if labyrinth[neue_y][neue_x] == 1:
                 return False
@@ -159,7 +180,6 @@ class App:
             figur_y = 0
             end_time = time.time()
             self.level_1_frame.destroy()
-            # Hauptframe starten
             self.set_name_frame()
 
         def bewege_figur(event):
@@ -187,9 +207,6 @@ class App:
             # Überprüfe, ob das Ziel erreicht wurde
             if labyrinth[figur_y][figur_x] == 2:
                 end_level(self)
-                #
-                # label = tk.Label(canvas, text="Next Level", font=("Arial", 20), fg="black", bg="white")
-                # label.pack(expand=True)
 
             zeichne_spielfeld()
 
@@ -199,11 +216,5 @@ class App:
         # Fenster neustarten
         self.master.mainloop()
 
-
-    def quit_app(self):
-        print("Programm beendet")
-        self.master.destroy()
-
-
-# App ausführen (Instanz der Klasse App erstellen)
+# App ausführen
 app = App()
